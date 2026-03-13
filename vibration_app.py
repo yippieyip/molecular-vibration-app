@@ -55,13 +55,12 @@ if st.button('▶ Run Simulation (Live)'):
     t_history = []
     x_history = []
     
-    # Create placeholders so the charts stay in the same spot
     with col1:
         atom_spot = st.empty()
     with col2:
         graph_spot = st.empty()
 
-    for t in np.linspace(0, 20, 300): # Reduced to 300 steps for speed
+    for t in np.linspace(0, 20, 300): 
         x = np.exp(-gamma * t) * np.cos(omega * t)
         t_history.append(t)
         x_history.append(x)
@@ -93,7 +92,6 @@ if st.button('▶ Run Simulation (Live)'):
         )
         graph_spot.plotly_chart(fig_graph, use_container_width=True, config={'displayModeBar': False})
         
-        # Small sleep to keep it looking like a real-time process
         time.sleep(0.05)
 
 # 7. Theory Section (Always Visible)
