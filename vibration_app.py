@@ -62,7 +62,7 @@ if st.button('▶ Run Simulation (Live)'):
     with col2:
         graph_spot = st.empty()
 
-    for t in np.linspace(0, 20, 100): # Reduced to 100 steps for speed
+    for t in np.linspace(0, 20, 300): # Reduced to 300 steps for speed
         x = np.exp(-gamma * t) * np.cos(omega * t)
         t_history.append(t)
         x_history.append(x)
@@ -95,8 +95,8 @@ if st.button('▶ Run Simulation (Live)'):
         graph_spot.plotly_chart(fig_graph, use_container_width=True, config={'displayModeBar': False})
         
         # Small sleep to keep it looking like a real-time process
-        time.sleep(0.01)
-        
+        time.sleep(0.05)
+
 # 7. Theory Section
 with st.expander("View Mathematical Theory"):
     st.latex(r"m \frac{d^2x}{dt^2} + c \frac{dx}{dt} + kx = 0")
