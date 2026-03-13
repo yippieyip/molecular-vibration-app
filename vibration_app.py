@@ -52,45 +52,51 @@ st.divider()
 col1, col2 = st.columns(2)
 
 # 6. Execution Loop
-if st.button('▶ Run Simulation (Optimized)'):
-    # 1. Generate all data at once
-    t_vals = np.linspace(0, 20, 200)
-    x_vals = np.exp(-gamma * t_vals) * np.cos(omega * t_vals)
+if st.button('▶ Run Simulation (Live)'):
+    t_history = []
+    x_history = []
     
-    # 2. Create the Plotly Figure
-    fig = go.Figure(
-        data=[
-            # The Atoms
-            go.Scatter(x=[-1.5, 1.5 + x_vals[0]], y=[0, 0], 
-                       mode='markers+lines',
-                       marker=dict(size=40, color=['red', 'blue']),
-                       line=dict(color='gray', width=4))
-        ],
-        layout=go.Layout(
-            xaxis=dict(range=[-5, 5], autorange=False, visible=False),
-            yaxis=dict(range=[-1, 1], autorange=False, visible=False),
-            title="Fluid Molecular Vibration",
-            updatemenus=[dict(
-                type="buttons",
-                buttons=[dict(label="Play",
-                              method="animate",
-                              args=[None, {"frame": {"duration": 20, "redraw": True}, "fromcurrent": True}])])]
-        ),
-        frames=[go.Frame(data=[go.Scatter(x=[-1.5, 1.5 + x_vals[i]], y=[0, 0])]) 
-                for i in range(len(t_vals))]
-    )
-    
-#    st.plotly_chart(fig, use_container_width=True)
+    # Create placeholders so the charts stay in the same spot
     with col1:
-        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-
-# And let's add the static full graph to col2 for a complete view
+        atom_spot = st.empty()
     with col2:
-        fig_graph = go.Figure()
-        fig_graph.add_trace(go.Scatter(x=t_vals, y=x_vals, line=dict(color='#FF4B4B')))
-        fig_graph.update_layout(title="Full Displacement History", xaxis_title="Time (s)", yaxis_title="x")
-        st.plotly_chart(fig_graph, use_container_width=True)
+        graph_spot = st.empty()
 
+    for t in np.linspace(0, 20, 100): # Reduced to 100 steps for speed
+        x = np.exp(-gamma * t) * np.cos(omega * t)
+        t_history.append(t)
+        x_history.append(x)
+        
+        # 1. Update Atom Animation (Left)
+        fig_atom = go.Figure(go.Scatter(
+            x=[-1.5, 1.5 + x], y=[0, 0],
+            mode='markers+lines',
+            marker=dict(size=40, color=['#FF4B4B', '#1C83E1']),
+            line=dict(color='gray', width=4)
+        ))
+        fig_atom.update_layout(
+            xaxis=dict(range=[-5, 5], visible=False),
+            yaxis=dict(range=[-1, 1], visible=False),
+            height=300, margin=dict(l=0, r=0, t=0, b=0)
+        )
+        atom_spot.plotly_chart(fig_atom, use_container_width=True, config={'displayModeBar': False})
+        
+        # 2. Update Displacement Graph (Right)
+        fig_graph = go.Figure(go.Scatter(
+            x=t_history, y=x_history,
+            mode='lines',
+            line=dict(color='#FF4B4B', width=2)
+        ))
+        fig_graph.update_layout(
+            xaxis=dict(range=[0, 20], title="Time (s)"),
+            yaxis=dict(range=[-1.2, 1.2], title="Displacement"),
+            height=300, margin=dict(l=0, r=0, t=0, b=0)
+        )
+        graph_spot.plotly_chart(fig_graph, use_container_width=True, config={'displayModeBar': False})
+        
+        # Small sleep to keep it looking like a real-time process
+        time.sleep(0.01)
+        
 # 7. Theory Section
 with st.expander("View Mathematical Theory"):
     st.latex(r"m \frac{d^2x}{dt^2} + c \frac{dx}{dt} + kx = 0")
