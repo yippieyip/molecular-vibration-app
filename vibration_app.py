@@ -97,8 +97,18 @@ if st.button('▶ Run Simulation (Live)'):
         # Small sleep to keep it looking like a real-time process
         time.sleep(0.05)
 
-# 7. Theory Section
-with st.expander("View Mathematical Theory"):
+# 7. Theory Section (Always Visible)
+st.divider()
+with st.expander("📖 View Mathematical Theory & Equations"):
+    st.write("The motion of the molecule is modeled as a **Damped Harmonic Oscillator**:")
     st.latex(r"m \frac{d^2x}{dt^2} + c \frac{dx}{dt} + kx = 0")
-    st.write("The solution for underdamped vibration:")
-    st.latex(r"x(t) = e^{-\frac{c}{2m} t} \cos\left(\sqrt{\frac{k}{m} - (\frac{c}{2m})^2} \cdot t\right)")
+    
+    st.write("Depending on your sliders, the system is solved using the following formula:")
+    st.latex(r"x(t) = e^{-\frac{c}{2m} t} \cos\left(\omega t\right)")
+    
+    st.info("""
+    - **m**: Atomic Mass (kg)
+    - **c**: Damping Coefficient (Friction/Viscosity)
+    - **k**: Bond Stiffness (N/m)
+    - **ω (Omega)**: Damped angular frequency
+    """)
