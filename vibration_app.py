@@ -60,7 +60,8 @@ if st.button('▶ Run Simulation (Live)'):
     with col2:
         graph_spot = st.empty()
 
-    for t in np.linspace(0, 20, 300): 
+    # ADDED: enumerate() here gives us an index (idx) starting at 0 to use as a unique key
+    for idx, t in enumerate(np.linspace(0, 20, 300)): 
         x = np.exp(-gamma * t) * np.cos(omega * t)
         t_history.append(t)
         x_history.append(x)
@@ -77,7 +78,8 @@ if st.button('▶ Run Simulation (Live)'):
             yaxis=dict(range=[-1, 1], visible=False),
             height=300, margin=dict(l=0, r=0, t=0, b=0)
         )
-        atom_spot.plotly_chart(fig_atom, use_container_width=True, config={'displayModeBar': False})
+        # FIXED: Added a dynamic key using idx
+        atom_spot.plotly_chart(fig_atom, use_container_width=True, config={'displayModeBar': False}, key=f"atom_{idx}")
         
         # 2. Update Displacement Graph (Right)
         fig_graph = go.Figure(go.Scatter(
@@ -90,7 +92,8 @@ if st.button('▶ Run Simulation (Live)'):
             yaxis=dict(range=[-1.2, 1.2], title="Displacement"),
             height=300, margin=dict(l=0, r=0, t=0, b=0)
         )
-        graph_spot.plotly_chart(fig_graph, use_container_width=True, config={'displayModeBar': False})
+        # FIXED: Added a dynamic key using idx
+        graph_spot.plotly_chart(fig_graph, use_container_width=True, config={'displayModeBar': False}, key=f"graph_{idx}")
         
         time.sleep(0.05)
 
