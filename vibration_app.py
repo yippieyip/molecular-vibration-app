@@ -30,21 +30,28 @@ c = st.sidebar.slider("Damping Coefficient", 0.0, 15.0, float(p["c"]))
 damping_ratio = c / (2 * np.sqrt(m * k))
 gamma = c / (2 * m)
 omega_0 = np.sqrt(k / m)
-omega = np.sqrt(max(0, omega_0**2 - gamma**2))
 
-if damping_ratio < 1:
-    status, color, note = "Underdamped", "green", "The molecule wiggles before stopping."
-elif damping_ratio == 1:
+# Use a small tolerance range to capture "Critically Damped" due to floating point rounding
+if np.isclose(damping_ratio, 1.0, atol=1e-2):
     status, color, note = "Critically Damped", "orange", "Fastest return to equilibrium."
+    omega = 0.0
+elif damping_ratio < 1:
+    status, color, note = "Underdamped", "green", "The molecule wiggles before stopping."
+    omega = np.sqrt(omega_0**2 - gamma**2)
 else:
     status, color, note = "Overdamped", "red", "Movement is slow due to high friction."
+    omega = 0.0
 
 # 4. Top Metrics Display
 st.divider()
 m1, m2, m3 = st.columns([1, 1, 2])
-with m1: st.metric("Damping Ratio", f"{damping_ratio:.2f}")
-with m2: st.markdown(f"**Status:** :{color}[{status}]")
-with m3: st.info(note)
+with m1: 
+    st.metric("Damping Ratio", f"{damping_ratio:.2f}")
+with m2: 
+    # Use st.markdown with standard color tags
+    st.markdown(f"**Status:** :{color}[{status}]")
+with m3: 
+    st.info(note)
 st.divider()
 
 # 5. Visual Layout
