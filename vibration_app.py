@@ -60,9 +60,20 @@ if st.button('▶ Run Simulation (Live)'):
     with col2:
         graph_spot = st.empty()
 
-    # ADDED: enumerate() here gives us an index (idx) starting at 0 to use as a unique key
     for idx, t in enumerate(np.linspace(0, 20, 300)): 
-        x = np.exp(-gamma * t) * np.cos(omega * t)
+        # --- CORRECTED PHYSICS LOGIC FOR ACCURATE CURVES ---
+        if damping_ratio < 1:
+            # Underdamped: Oscillates with decaying amplitude
+            x = np.exp(-gamma * t) * np.cos(omega * t)
+        elif damping_ratio == 1:
+            # Critically Damped: Fast return to equilibrium without wiggling
+            x = (1 + gamma * t) * np.exp(-gamma * t)
+        else:
+            # Overdamped: Heavy friction, slow drag back to equilibrium
+            r1 = -gamma + np.sqrt(gamma**2 - omega_0**2)
+            r2 = -gamma - np.sqrt(gamma**2 - omega_0**2)
+            x = 0.5 * (np.exp(r1 * t) + np.exp(r2 * t))
+            
         t_history.append(t)
         x_history.append(x)
         
@@ -78,7 +89,6 @@ if st.button('▶ Run Simulation (Live)'):
             yaxis=dict(range=[-1, 1], visible=False),
             height=300, margin=dict(l=0, r=0, t=0, b=0)
         )
-        # FIXED: Added a dynamic key using idx
         atom_spot.plotly_chart(fig_atom, use_container_width=True, config={'displayModeBar': False}, key=f"atom_{idx}")
         
         # 2. Update Displacement Graph (Right)
@@ -92,7 +102,6 @@ if st.button('▶ Run Simulation (Live)'):
             yaxis=dict(range=[-1.2, 1.2], title="Displacement"),
             height=300, margin=dict(l=0, r=0, t=0, b=0)
         )
-        # FIXED: Added a dynamic key using idx
         graph_spot.plotly_chart(fig_graph, use_container_width=True, config={'displayModeBar': False}, key=f"graph_{idx}")
         
         time.sleep(0.05)
