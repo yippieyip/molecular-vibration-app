@@ -119,18 +119,16 @@ with st.expander("📖 View Mathematical Theory & Equations"):
     st.write("The motion of the molecule is modeled as a **Damped Harmonic Oscillator**:")
     st.latex(r"m \frac{d^2x}{dt^2} + c \frac{dx}{dt} + kx = 0")
     
-    st.write(f"Based on your current settings (**{status}**), the motion is solved using:")
+    st.write(f"Based on your current settings (**{status}**):")
     
-    # Dynamic Equation Display based on Damping Regime
     if damping_ratio < 1:
-        st.latex(r"x(t) = e^{-\frac{c}{2m} t} \cos(\omega t)")
-        st.caption(r"where $\omega = \sqrt{\omega_0^2 - \gamma^2}$ is the damped angular frequency.")
+        # Full exact formula starting from rest
+        st.latex(r"x(t) = x_0 e^{-\gamma t} \left[ \cos(\omega t) + \frac{\gamma}{\omega} \sin(\omega t) \right]")
+        st.caption(r"where $\gamma = \frac{c}{2m}$ and $\omega = \sqrt{\omega_0^2 - \gamma^2}$.")
     elif np.isclose(damping_ratio, 1.0, atol=1e-2):
-        st.latex(r"x(t) = \left(1 + \frac{c}{2m} t\right) e^{-\frac{c}{2m} t}")
-        st.caption("Critical damping: Returns to equilibrium in minimum time without oscillating.")
+        st.latex(r"x(t) = x_0 (1 + \gamma t) e^{-\gamma t}")
     else:
-        st.latex(r"x(t) = \frac{1}{2} \left( e^{r_1 t} + e^{r_2 t} \right)")
-        st.caption(r"where roots $r_{1,2} = -\gamma \pm \sqrt{\gamma^2 - \omega_0^2}$ are real and negative.")
+        st.latex(r"x(t) = c_1 e^{r_1 t} + c_2 e^{r_2 t}")
     
     st.info("""
     - **m**: Atomic Mass (kg)
